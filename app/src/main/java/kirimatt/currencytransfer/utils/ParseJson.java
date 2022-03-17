@@ -62,7 +62,11 @@ public class ParseJson {
 
 
         //step 2: check date of shared data to expire
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.ROOT);
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "yyyy-MM-dd'T'HH:mm:ssZ",
+                Locale.ROOT
+        );
+
         Date date = null;
 
         try {
@@ -71,7 +75,7 @@ public class ParseJson {
 
             Toast.makeText(
                     appCompatActivity.getApplicationContext(),
-                    e.getMessage(),
+                    R.string.parseDateException,
                     Toast.LENGTH_SHORT
             ).show();
 
@@ -110,7 +114,9 @@ public class ParseJson {
                                        List<CurrencyDAO> currencyList, ListView listView) {
         final ProgressBar progressBar = appCompatActivity.findViewById(R.id.progressBar);
         progressBar.setVisibility(ListView.VISIBLE);
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.GET,
+                url,
                 response -> {
                     progressBar.setVisibility(View.INVISIBLE);
 

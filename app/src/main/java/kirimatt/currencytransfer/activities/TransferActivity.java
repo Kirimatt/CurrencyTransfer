@@ -40,12 +40,12 @@ public class TransferActivity extends AppCompatActivity {
 
         textViewDescription = findViewById(R.id.textViewDescription);
 
+        String nominal = FORMATTER.format(currency.getValue() / currency.getPrevious()
+                * 100 / currency.getPrevious());
+
         String description = "Номинал: " + currency.getNominal() + "  "
-                + (currency.getPrevious() > currency.getValue() ? "↓" : "↑") +
-                FORMATTER.format(
-                        currency.getValue() / currency.getPrevious()
-                                * 100 / currency.getPrevious()
-                ) + "%";
+                + (currency.getPrevious() > currency.getValue() ? "↓" : "↑") + nominal + "%";
+
         textViewDescription.setText(description);
 
         editTextRub = findViewById(R.id.editTextNumberDecimalRub);
@@ -68,7 +68,7 @@ public class TransferActivity extends AppCompatActivity {
 
         buttonTransfer = findViewById(R.id.buttonTransfer);
         buttonTransfer.setOnClickListener(onClick -> {
-            if (editTextCurrency.length() == 0 && editTextRub.length()  == 0)
+            if (editTextCurrency.length() == 0 && editTextRub.length() == 0)
                 return;
 
             if (isLastCurrency) {

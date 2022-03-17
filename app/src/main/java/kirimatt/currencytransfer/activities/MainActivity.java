@@ -29,11 +29,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         listView = findViewById(R.id.listView);
-        listView.setOnItemClickListener((parent, view, position, id) -> openTransferActivity(position));
+        listView.setOnItemClickListener(
+                (parent, view, position, id) -> openTransferActivity(position)
+        );
 
         buttonRefresh = findViewById(R.id.buttonRefresh);
         buttonRefresh.setOnClickListener(view -> {
             currencyList.clear();
+
             ParseJson.loadJsonFromSharedPreferences(this, currencyList, listView);
 
             Toast.makeText(
