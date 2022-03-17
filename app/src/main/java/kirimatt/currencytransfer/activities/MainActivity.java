@@ -1,6 +1,8 @@
 package kirimatt.currencytransfer.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ListView;
@@ -37,7 +39,12 @@ public class MainActivity extends AppCompatActivity {
         buttonRefresh.setOnClickListener(view -> {
             currencyList.clear();
 
-            ParseJson.loadJsonFromSharedPreferences(this, currencyList, listView);
+            SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();
+            editor.apply();
+
+            ParseJson.loadJSONFromURL(JSON_URL,this, currencyList, listView);
 
             Toast.makeText(
                     getApplicationContext(),

@@ -16,7 +16,7 @@ import kirimatt.currencytransfer.interfaces.ITextWatcher;
 
 public class TransferActivity extends AppCompatActivity {
 
-    private final DecimalFormat FORMATTER = new DecimalFormat("#.##");
+    private final DecimalFormat FORMATTER = new DecimalFormat("#.###");
     private TextView textViewCurrency;
     private TextView textViewDescription;
     private Button buttonTransfer;

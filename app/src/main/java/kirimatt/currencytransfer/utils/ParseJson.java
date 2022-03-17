@@ -70,7 +70,7 @@ public class ParseJson {
         Date date = null;
 
         try {
-            date = dateFormat.parse((String) Objects.requireNonNull(map.get("Timestamp")));
+            date = dateFormat.parse((String) Objects.requireNonNull(map.get("Date")));
         } catch (ParseException e) {
 
             Toast.makeText(
@@ -83,9 +83,16 @@ public class ParseJson {
 
         //24 hours expire
         if (date == null || TimeUnit.MILLISECONDS
-                .toHours(System.currentTimeMillis() - date.getTime()) > 24) {
+                .toHours(System.currentTimeMillis() - date.getTime()) > 1) {
 
             progressBar.setVisibility(View.INVISIBLE);
+
+            Toast.makeText(
+                    appCompatActivity.getApplicationContext(),
+                    "Время действия списка валют истекло, обновление...",
+                    Toast.LENGTH_SHORT
+            ).show();
+
 
             loadJSONFromURL(MainActivity.JSON_URL, appCompatActivity, currencyList, listView);
             return;
@@ -114,6 +121,9 @@ public class ParseJson {
                                        List<CurrencyDAO> currencyList, ListView listView) {
         final ProgressBar progressBar = appCompatActivity.findViewById(R.id.progressBar);
         progressBar.setVisibility(ListView.VISIBLE);
+
+        RequestQueue requestQueue = Volley.newRequestQueue(appCompatActivity);
+
         StringRequest stringRequest = new StringRequest(
                 Request.Method.GET,
                 url,
@@ -143,6 +153,8 @@ public class ParseJson {
                             currencyList
                     );
                     listView.setAdapter(adapter);
+
+                    requestQueue.getCache().clear();
                 },
                 error -> Toast.makeText(
                         appCompatActivity.getApplicationContext(),
@@ -151,7 +163,7 @@ public class ParseJson {
                 ).show()
         );
 
-        RequestQueue requestQueue = Volley.newRequestQueue(appCompatActivity);
+
         requestQueue.add(stringRequest);
     }
 }
