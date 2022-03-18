@@ -11,6 +11,7 @@
     <string name="currencyEditText">Количество в валюте</string>
     <string name="textViewRub">RUB</string>
     <string name="textViewCurrency">USD</string>
-    <string name="refreshed">Обновлено!</string>
+    <string name="refreshed">Обновляется…</string>
     <string name="parseDateException">Ошибка парса даты JSON</string>
+    <string name="connectionError">Ошибка подключения</string>
 </resources>

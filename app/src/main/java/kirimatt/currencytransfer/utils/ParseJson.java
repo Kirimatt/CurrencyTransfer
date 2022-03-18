@@ -39,7 +39,7 @@ public class ParseJson {
 
     public static void loadJsonFromSharedPreferences(AppCompatActivity appCompatActivity,
                                                      List<CurrencyDAO> currencyList,
-                                                     ListView listView) {
+                                                     ListView listView, boolean isConnectionError) {
         final ProgressBar progressBar = appCompatActivity.findViewById(R.id.progressBar);
         progressBar.setVisibility(ListView.VISIBLE);
 
@@ -53,7 +53,7 @@ public class ParseJson {
         Map map = ParseJson.parseJsonToMap(jsonValue);
 
         //step 1: check shared preferences to contains data
-        if (jsonValue == null || jsonValue.isEmpty()) {
+        if ((jsonValue == null || jsonValue.isEmpty()) && !isConnectionError) {
             progressBar.setVisibility(View.INVISIBLE);
 
             loadJSONFromURL(MainActivity.JSON_URL, appCompatActivity, currencyList, listView);
@@ -71,7 +71,7 @@ public class ParseJson {
 
         try {
             date = dateFormat.parse((String) Objects.requireNonNull(map.get("Date")));
-        } catch (ParseException e) {
+        } catch (ParseException | NullPointerException e) {
 
             Toast.makeText(
                     appCompatActivity.getApplicationContext(),
@@ -81,9 +81,10 @@ public class ParseJson {
 
         }
 
-        //24 hours expire
-        if (date == null || TimeUnit.MILLISECONDS
-                .toHours(System.currentTimeMillis() - date.getTime()) > 1) {
+        //24 hours expire and no connection error
+        if ((date == null || TimeUnit.MILLISECONDS
+                .toHours(System.currentTimeMillis() - date.getTime()) > 0)
+                && !isConnectionError) {
 
             progressBar.setVisibility(View.INVISIBLE);
 
@@ -99,20 +100,7 @@ public class ParseJson {
         }
 
         //get list of currencies
-        Map valuteMap = (Map) map.get(appCompatActivity.getString(R.string.currencyInRussian));
-
-        for (Object s : Objects.requireNonNull(valuteMap).keySet()) {
-            Map bufferMap = (Map) valuteMap.get(s);
-            currencyList.add(new CurrencyDAO(Objects.requireNonNull(bufferMap)));
-        }
-
-        ListAdapter adapter = new ListViewAdapter(
-                appCompatActivity.getApplicationContext(),
-                R.layout.row,
-                R.id.textViewName,
-                currencyList
-        );
-        listView.setAdapter(adapter);
+        generateListView(map, appCompatActivity, currencyList, listView);
 
         progressBar.setVisibility(View.INVISIBLE);
     }
@@ -138,32 +126,48 @@ public class ParseJson {
                     editor.apply();
 
                     Map map = ParseJson.parseJsonToMap(response);
-                    Map valuteMap = (Map) map
-                            .get(appCompatActivity.getString(R.string.currencyInRussian));
 
-                    for (Object s : Objects.requireNonNull(valuteMap).keySet()) {
-                        Map bufferMap = (Map) valuteMap.get(s);
-                        currencyList.add(new CurrencyDAO(Objects.requireNonNull(bufferMap)));
-                    }
-
-                    ListAdapter adapter = new ListViewAdapter(
-                            appCompatActivity.getApplicationContext(),
-                            R.layout.row,
-                            R.id.textViewName,
-                            currencyList
-                    );
-                    listView.setAdapter(adapter);
+                    generateListView(map, appCompatActivity, currencyList, listView);
 
                     requestQueue.getCache().clear();
                 },
-                error -> Toast.makeText(
-                        appCompatActivity.getApplicationContext(),
-                        error.getMessage(),
-                        Toast.LENGTH_SHORT
-                ).show()
+                error -> {
+                    Toast.makeText(
+                            appCompatActivity.getApplicationContext(),
+                            R.string.connectionError,
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                    loadJsonFromSharedPreferences(
+                            appCompatActivity,
+                            currencyList,
+                            listView,
+                            true
+                    );
+                }
         );
 
 
         requestQueue.add(stringRequest);
+    }
+
+
+    public static void generateListView(Map map, AppCompatActivity appCompatActivity,
+                                        List<CurrencyDAO> currencyList, ListView listView) {
+        Map valuteMap = (Map) map
+                .get(appCompatActivity.getString(R.string.currencyInRussian));
+
+        for (Object s : Objects.requireNonNull(valuteMap).keySet()) {
+            Map bufferMap = (Map) valuteMap.get(s);
+            currencyList.add(new CurrencyDAO(Objects.requireNonNull(bufferMap)));
+        }
+
+        ListAdapter adapter = new ListViewAdapter(
+                appCompatActivity.getApplicationContext(),
+                R.layout.row,
+                R.id.textViewName,
+                currencyList
+        );
+        listView.setAdapter(adapter);
     }
 }

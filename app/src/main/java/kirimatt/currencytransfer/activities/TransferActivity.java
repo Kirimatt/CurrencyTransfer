@@ -40,11 +40,12 @@ public class TransferActivity extends AppCompatActivity {
 
         textViewDescription = findViewById(R.id.textViewDescription);
 
-        String nominal = FORMATTER.format(currency.getValue() / currency.getPrevious()
+        String changedCurrency = FORMATTER.format(currency.getValue() / currency.getPrevious()
                 * 100 / currency.getPrevious());
 
-        String description = "Номинал: " + currency.getNominal() + "  "
-                + (currency.getPrevious() > currency.getValue() ? "↓" : "↑") + nominal + "%";
+        String description = "Курс: " + currency.getValue() +
+                " Номинал: " + currency.getNominal() + "  "
+                + (currency.getPrevious() > currency.getValue() ? "↓" : "↑") + changedCurrency + "%";
 
         textViewDescription.setText(description);
 
@@ -87,7 +88,7 @@ public class TransferActivity extends AppCompatActivity {
 
         Double currencyCount = Double.valueOf(editTextCurrency.getText().toString());
 
-        editTextRub.setText(FORMATTER.format(currencyCount * currency.getValue()));
+        editTextRub.setText(FORMATTER.format(currencyCount * currency.getValue() / currency.getNominal()));
     }
 
     public void rubToCurrency() {
@@ -98,6 +99,6 @@ public class TransferActivity extends AppCompatActivity {
 
         Double rubCount = Double.valueOf(editTextRub.getText().toString());
 
-        editTextCurrency.setText(FORMATTER.format(rubCount / currency.getValue()));
+        editTextCurrency.setText(FORMATTER.format(rubCount / currency.getValue() * currency.getNominal()));
     }
 }
