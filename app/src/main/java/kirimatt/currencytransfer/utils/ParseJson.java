@@ -1,6 +1,5 @@
 package kirimatt.currencytransfer.utils;
 
-import static kirimatt.currencytransfer.CurrencyApp.GSON;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -12,6 +11,8 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.gson.Gson;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,21 +20,23 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import kirimatt.currencytransfer.CurrencyApp;
 import kirimatt.currencytransfer.R;
 import kirimatt.currencytransfer.adapters.ListViewAdapter;
 import kirimatt.currencytransfer.daos.CurrencyDao;
 import kirimatt.currencytransfer.daos.JsonDao;
-import kirimatt.currencytransfer.requests.CurrencyApiRequest;
+import kirimatt.currencytransfer.services.CurrencyService;
 
 public class ParseJson {
+
+    private static final Gson GSON = new Gson();
 
     private ParseJson() {
     }
 
-    public static void loadJsonFromSharedPreferences(AppCompatActivity appCompatActivity,
-                                                     ListView listView, boolean isConnectionError) {
+    public static JsonDao loadJsonFromSharedPreferences(AppCompatActivity appCompatActivity,
+                                                        ListView listView, boolean isConnectionError) {
         final ProgressBar progressBar = appCompatActivity.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.VISIBLE);
 
@@ -50,8 +53,7 @@ public class ParseJson {
         if ((jsonValue == null || jsonValue.isEmpty()) && !isConnectionError) {
             progressBar.setVisibility(View.INVISIBLE);
 
-            loadJSONFromURL(appCompatActivity, listView);
-            return;
+            return loadJSONFromURL(appCompatActivity, listView);
         }
 
 
@@ -89,22 +91,49 @@ public class ParseJson {
             ).show();
 
 
-            loadJSONFromURL(appCompatActivity, listView);
-            return;
+            return loadJSONFromURL(appCompatActivity, listView);
         }
 
         //get list of currencies
         generateListView(jsonDao, appCompatActivity, listView);
 
-        CurrencyApp.setJsonDao(jsonDao);
-
         progressBar.setVisibility(View.INVISIBLE);
+
+        return jsonDao;
     }
 
-    public static void loadJSONFromURL(AppCompatActivity appCompatActivity, ListView listView) {
+    public static JsonDao loadJSONFromURL(AppCompatActivity appCompatActivity, ListView listView) {
 
-        CurrencyApiRequest.getJsonDao(appCompatActivity, listView);
+        final ProgressBar progressBar = appCompatActivity.findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);
 
+        JsonDao jsonDao = CurrencyService.getJsonDao();
+
+        if (jsonDao.getCurrencyMap() == null) {
+            Toast.makeText(
+                    appCompatActivity.getApplicationContext(),
+                    "Ошибка при подключении",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return loadJsonFromSharedPreferences(appCompatActivity, listView, true);
+        }
+
+        //set shared data json of currencies
+        SharedPreferences sharedPref = appCompatActivity
+                .getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(
+                appCompatActivity.getString(R.string.jsonCurrency),
+                GSON.toJson(jsonDao)
+        );
+        editor.apply();
+
+        ParseJson.generateListView(jsonDao, appCompatActivity, listView);
+
+        progressBar.setVisibility(View.INVISIBLE);
+
+        return jsonDao;
     }
 
     public static void generateListView(JsonDao jsonDao, AppCompatActivity appCompatActivity,

@@ -13,5 +13,4 @@
     <string name="refreshed">Обновляется…</string>
     <string name="parseDateException">Ошибка парса даты JSON</string>
     <string name="connectionError">Ошибка подключения</string>
-    <string name="cbrLink">https://www.cbr-xml-daily.ru</string>
 </resources>

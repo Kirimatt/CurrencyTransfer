@@ -10,13 +10,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
-import kirimatt.currencytransfer.CurrencyApp;
 import kirimatt.currencytransfer.R;
+import kirimatt.currencytransfer.daos.JsonDao;
 import kirimatt.currencytransfer.utils.ParseJson;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final String EXTRA_CURRENCY = "kirimatt.currencyTransfer.EXTRA_CURRENCY";
+    private JsonDao jsonDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
         Button buttonRefresh = findViewById(R.id.buttonRefresh);
         buttonRefresh.setOnClickListener(view -> {
 
-            ParseJson.loadJSONFromURL(this, listView);
+            jsonDao = ParseJson.loadJSONFromURL(this, listView);
 
             Toast.makeText(
                     getApplicationContext(),
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
             ).show();
         });
 
-        ParseJson.loadJsonFromSharedPreferences(
+        jsonDao = ParseJson.loadJsonFromSharedPreferences(
                 this,
                 listView,
                 false
@@ -49,11 +50,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void openTransferActivity(int position) {
-        if (CurrencyApp.getJsonDao() != null) {
+        if (jsonDao != null) {
             Intent intent = new Intent(this, TransferActivity.class);
             intent.putExtra(
                     EXTRA_CURRENCY,
-                    new ArrayList<>(CurrencyApp.getJsonDao().getCurrencyMap().values()).get(position)
+                    new ArrayList<>(jsonDao.getCurrencyMap().values()).get(position)
             );
             startActivity(intent);
         }

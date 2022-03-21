@@ -21,6 +21,9 @@ public class JsonDao implements Serializable {
     @SerializedName("Valute")
     private Map<String, CurrencyDao> currencyMap;
 
+    public JsonDao() {
+    }
+
     public JsonDao(String date, String previousDate, String previousURL,
                    String timestamp, Map<String, CurrencyDao> currencyMap) {
         this.date = date;
