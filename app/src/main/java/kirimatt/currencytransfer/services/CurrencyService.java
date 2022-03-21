@@ -30,7 +30,8 @@ public class CurrencyService {
         currencyApi = retrofit.create(CurrencyApi.class);
     }
 
-    private CurrencyService() {}
+    private CurrencyService() {
+    }
 
     public static JsonDao getJsonDao() {
         return currencyApi.getJsonDto()
