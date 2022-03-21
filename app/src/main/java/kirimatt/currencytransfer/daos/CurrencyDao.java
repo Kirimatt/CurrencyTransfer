@@ -3,19 +3,28 @@ package kirimatt.currencytransfer.daos;
 
 import androidx.annotation.NonNull;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.Map;
 
-public class CurrencyDAO implements Serializable {
+public class CurrencyDao implements Serializable {
+    @SerializedName("ID")
     private String id;
+    @SerializedName("NumCode")
     private Integer numCode;
+    @SerializedName("CharCode")
     private String charCode;
+    @SerializedName("Nominal")
     private Double nominal;
+    @SerializedName("Name")
     private String name;
+    @SerializedName("Value")
     private Double value;
+    @SerializedName("Previous")
     private Double previous;
 
-    public CurrencyDAO(String id, Integer numCode, String charCode, Double nominal,
+    public CurrencyDao(String id, Integer numCode, String charCode, Double nominal,
                        String name, Double value, Double previous) {
         this.id = id;
         this.numCode = numCode;
@@ -26,7 +35,7 @@ public class CurrencyDAO implements Serializable {
         this.previous = previous;
     }
 
-    public CurrencyDAO(Map map) {
+    public CurrencyDao(Map<Object, Object> map) {
         this.id = String.valueOf(map.get("ID"));
         this.numCode = Integer.valueOf(String.valueOf(map.get("NumCode")));
         this.charCode = String.valueOf(map.get("CharCode"));
