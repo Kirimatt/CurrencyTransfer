@@ -11,19 +11,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.text.DecimalFormat;
 
 import kirimatt.currencytransfer.R;
-import kirimatt.currencytransfer.daos.CurrencyDAO;
+import kirimatt.currencytransfer.daos.CurrencyDao;
 import kirimatt.currencytransfer.interfaces.ITextWatcher;
 
 public class TransferActivity extends AppCompatActivity {
 
-    private final DecimalFormat FORMATTER = new DecimalFormat("#.###");
-    private TextView textViewCurrency;
-    private TextView textViewDescription;
-    private Button buttonTransfer;
+    private static final DecimalFormat FORMATTER = new DecimalFormat("#.###");
     private EditText editTextRub;
     private EditText editTextCurrency;
     private boolean isLastCurrency;
-    private CurrencyDAO currency;
+    private CurrencyDao currency;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,14 +28,14 @@ public class TransferActivity extends AppCompatActivity {
         setContentView(R.layout.activity_transfer);
 
         Intent intent = getIntent();
-        currency = (CurrencyDAO) intent.getSerializableExtra(MainActivity.EXTRA_CURRENCY);
+        currency = (CurrencyDao) intent.getSerializableExtra(MainActivity.EXTRA_CURRENCY);
 
         setTitle(currency.getName());
 
-        textViewCurrency = findViewById(R.id.textViewCurrency);
+        TextView textViewCurrency = findViewById(R.id.textViewCurrency);
         textViewCurrency.setText(currency.getCharCode());
 
-        textViewDescription = findViewById(R.id.textViewDescription);
+        TextView textViewDescription = findViewById(R.id.textViewDescription);
 
         String changedCurrency = FORMATTER.format(currency.getValue() / currency.getPrevious()
                 * 100 / currency.getPrevious());
@@ -67,7 +64,7 @@ public class TransferActivity extends AppCompatActivity {
                 }
         );
 
-        buttonTransfer = findViewById(R.id.buttonTransfer);
+        Button buttonTransfer = findViewById(R.id.buttonTransfer);
         buttonTransfer.setOnClickListener(onClick -> {
             if (editTextCurrency.length() == 0 && editTextRub.length() == 0)
                 return;

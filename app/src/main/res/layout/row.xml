@@ -17,7 +17,7 @@ android:padding="16dp">
     android:id="@+id/textViewCharsName"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="@string/email"
+    android:text="@string/charCode"
     android:textSize="20sp"/>
 
 </LinearLayout>
